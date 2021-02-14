@@ -19,7 +19,7 @@ def main():
     very_verbose = args.very_verbose
     subkey = ''
     final = ''
-    hex_string = ('A' * block_size) + decode(ciphertext, encoding)
+    hex_string = decode(ciphertext, encoding)
     num_of_blocks = (len(hex_string)/block_size) - 1
     for i in range((len(hex_string)/16) - 1):
         next_block = ''
