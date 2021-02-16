@@ -47,22 +47,22 @@ def intro():
 
     ***********************************************''')
     parser = argparse.ArgumentParser()
-    parser.add_argument("-u", "--url", help="target url", required=True)
-    parser.add_argument("-c","--ciphertext", help="ciphertext to decode", required=True)
-    parser.add_argument("-p","--parameter", help="parameter to use with ciphertext", required=True)
-    parser.add_argument("-e","--encoding", help="encoding mode, please choose one: 1)base64 2)websafe base64 3)hex", required=False, default=2)
-    parser.add_argument("-m","--http-method", help="http method (GET or POST)", required=False, default="get")
-    parser.add_argument("-t","--error-string", help="string in response to indicate padding exception", required=False, default="PaddingException")
-    parser.add_argument("-b","--block-size", help="block size", required=False, default=16)
+    parser.add_argument("-u", "--url", help="target url", required=True, type=str)
+    parser.add_argument("-c","--ciphertext", help="ciphertext to decode", required=True, type=str)
+    parser.add_argument("-p","--parameter", help="parameter to use with ciphertext", required=True, type=str)
+    parser.add_argument("-e","--encoding", help="encoding mode, please choose one: 1)base64 2)websafe base64 3)hex", required=False, default=2, type=int)
+    parser.add_argument("-m","--http-method", help="http method (GET or POST)", required=False, default="get", type=str)
+    parser.add_argument("-t","--error-string", help="string in response to indicate padding exception", required=False, default="PaddingException", type=str)
+    parser.add_argument("-b","--block-size", help="block size", required=False, default=16, type=int)
     parser.add_argument("-v","--verbose", help="verbose output", action='store_true')
     parser.add_argument("-vv","--very-verbose", help="very verbose output", action='store_true')
     args = parser.parse_args()
     return args
 
 def decode(ciphertext, encoding):
-    if encoding == '1':
+    if encoding == 1:
         dec = lambda x: base64.decodestring(x)
-    elif encoding == '2':
+    elif encoding == 2:
         dec = lambda x: base64.decodestring(x.replace('~', '=').replace('!', '/').replace('-', '+'))
     elif encoding == 3:
         dec = lambda x: x.decode('hex')
@@ -71,11 +71,11 @@ def decode(ciphertext, encoding):
     return dec(ciphertext)
 
 def encode(rawData, encoding):
-    if encoding == '1':
+    if encoding == 1:
         enc = lambda x: base64.b64encode(x)
-    elif encoding == '2':
+    elif encoding == 2:
         enc = lambda x: base64.b64encode(x).replace('=', '~').replace('/', '!').replace('+', '-').strip()
-    elif encoding == '3':
+    elif encoding == 3:
         enc = lambda x: x.encode('hex')
     else:
         sys.exit('invalid encoding mode\nplease choose a valid encoding (1,2, or 3)')
