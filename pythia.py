@@ -134,4 +134,7 @@ def get_next_block(url, hex_string, pos, prev_block, block_size, encoding, param
 
 
 if __name__ == '__main__':
-	main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit('goodbye')
